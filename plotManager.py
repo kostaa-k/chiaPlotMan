@@ -8,17 +8,17 @@ from plot import Plot
 
 class PlotManager:
     
-    def __init__(self, outputDirectories):
+    def __init__(self, outputDirectories, numConcurrentPlots=4):
         self.runningPlots = []
         self.waitingPlots = []
         self.outputDirectories = outputDirectories
-
+        self.numConcurrentPlots = numConcurrentPlots
         self.plotsPerOutputLocation = {}
         for outputDirectory in outputDirectories:
             self.plotsPerOutputLocation[outputDirectory] = 0
 
-    def createPlot(self, numPlots, numThreads, ramMB, tempLocation, kSize=31, staggered=False):
-        tempPlot = Plot(numPlots, numThreads, ramMB, tempLocation, kSize, staggered)
+    def createPlot(self, numThreads, ramMB, tempLocation, kSize=31, staggered=False):
+        tempPlot = Plot(numThreads, ramMB, tempLocation, kSize, staggered)
         self.waitingPlots.append(deepcopy(tempPlot))
 
         return tempPlot
@@ -44,23 +44,30 @@ class PlotManager:
             if(value > 4):
                 self.finishPlot(key)
 
+    def getNumPlotsInStageOne(self):
+        numPlotsStageOne = 0
+        for key, value in self.getAllPlotStages().items():
+            if(value == 1):
+                numPlotsStageOne = numPlotsStageOne+1
+
+        return numPlotsStageOne
+
 
     def finishPlot(self, plot):
         del self.runningPlots[self.runningPlots.index(plot)]
-        self.createPlot(plot.numPlots, plot.numThreads, plot.ramMB, plot.tempLocation)
+        self.createPlot(plot.numThreads, plot.ramMB, plot.tempLocation)
 
     def canRunNextPlot(self):
         if(len(self.waitingPlots) == 0):
             return False
 
-        for key, value in self.getAllPlotStages().items():
-            if(value == 1):
-                return False
+        if(self.getNumPlotsInStageOne() >= self.numConcurrentPlots):
+            return False
 
         return True
         
     def outputStatusOfPlots(self):
-        for key, value in self.getAllPlotStages.items():
+        for key, value in self.getAllPlotStages().items():
             print(key.tempLocation, " at Stage: ", value)
 
     def getAllPlotStages(self):
@@ -131,6 +138,9 @@ class PlotManager:
                     tempStage = (int)(line.lower().split("starting phase ")[1][0])
                     if(tempStage > maxStage):
                         maxStage = tempStage
+                
+                if("renamed final file" in line.lower()):
+                    return 5
 
         return maxStage
 

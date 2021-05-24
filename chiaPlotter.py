@@ -5,8 +5,8 @@ import time
 def main():
 
     plotManager = PlotManager(["D:\chiaFinal", "D:\chiaFinal"])
-    plot1 = plotManager.createPlot(2, 4, 4000, "D:\chiaTemp")
-    plot1 = plotManager.createPlot(2, 4, 4000, "D:\chiaTemp")
+    plot1 = plotManager.createPlot(4, 4000, "D:\chiaTemp")
+    plot2 = plotManager.createPlot(4, 4000, "D:\chiaTemp")
 
     plotManager.startPlotting()
 
