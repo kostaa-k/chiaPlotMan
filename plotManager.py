@@ -8,12 +8,13 @@ from plot import Plot
 
 class PlotManager:
     
-    def __init__(self, outputDirectories, numConcurrentPlots=4):
+    def __init__(self, outputDirectories, numConcurrentPlots=1):
         self.runningPlots = []
         self.waitingPlots = []
         self.outputDirectories = outputDirectories
         self.numConcurrentPlots = numConcurrentPlots
         self.plotsPerOutputLocation = {}
+        self.numFinishedPlots = 0
         for outputDirectory in outputDirectories:
             self.plotsPerOutputLocation[outputDirectory] = 0
 
@@ -56,6 +57,7 @@ class PlotManager:
     def finishPlot(self, plot):
         del self.runningPlots[self.runningPlots.index(plot)]
         self.createPlot(plot.numThreads, plot.ramMB, plot.tempLocation)
+        self.numFinishedPlots = self.numFinishedPlots+1
 
     def canRunNextPlot(self):
         if(len(self.waitingPlots) == 0):
@@ -67,8 +69,14 @@ class PlotManager:
         return True
         
     def outputStatusOfPlots(self):
+        utilFunctions.clearCommandLine()
+        print("Running Plots:")
         for key, value in self.getAllPlotStages().items():
-            print(key.tempLocation, " at Stage: ", value)
+            print(key.tempLocation, " at Stage: ", value, "Plot Process id: ", key.processId)
+            print()
+            print("Num of waiting plots: ", len(self.waitingPlots))
+            print("Num of finished plots: ", self.numFinishedPlots)
+
 
     def getAllPlotStages(self):
         plotStagesDict = {}

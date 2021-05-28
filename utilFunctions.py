@@ -23,3 +23,11 @@ def get_free_space_gb(dirname):
     else:
         st = os.statvfs(dirname)
         return st.f_bavail * st.f_frsize / 1024 / 1024 /1024
+
+
+def clearCommandLine():
+    """Return folder/drive free space (in gigabytes)."""
+    if platform.system() == 'Windows':
+        os.system("cls")
+    else:
+        os.system("reset")
