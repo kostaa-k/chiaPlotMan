@@ -1,5 +1,6 @@
 from subprocess import Popen, PIPE, CalledProcessError
 
+import os
 import psutil
 import utilFunctions
 import time
@@ -18,13 +19,16 @@ class PlotManager:
         for outputDirectory in outputDirectories:
             self.plotsPerOutputLocation[outputDirectory] = 0
 
-    def createPlot(self, numThreads, ramMB, tempLocation, kSize=31, staggered=False):
+    def createPlot(self, numThreads, ramMB, tempLocation, kSize=32, staggered=False):
         tempPlot = Plot(numThreads, ramMB, tempLocation, kSize, staggered)
         self.waitingPlots.append(deepcopy(tempPlot))
 
         return tempPlot
 
     def startPlotting(self):
+
+        for tempDir in self.outputDirectories:
+            os.system("chia plots add -d "+tempDir)
         self.removeFullDirectories()
         while(len(self.outputDirectories) > 0):
             plotToRun = self.waitingPlots.pop()

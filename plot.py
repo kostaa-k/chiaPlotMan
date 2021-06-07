@@ -6,7 +6,7 @@ class Plot:
 
     kSizeDict = {31: 1, 32: 108, 33: 256}
 
-    def __init__(self, numThreads, ramMB, tempLocation , kSize=31, staggered=False):
+    def __init__(self, numThreads, ramMB, tempLocation , kSize=32, staggered=False):
         self.processId = ""
         self.stage = 0
         self.finalLocation = ""
@@ -19,7 +19,7 @@ class Plot:
         self.finalPlotSize = self.kSizeDict[kSize]
         
 
-    def getCommandStr(self, isTesting=True):
+    def getCommandStr(self, isTesting=False):
         commandStr = "chia plots create -k "+(str)(self.kSize)+" -b "+(str)(self.ramMB)+" -t "+self.tempLocation+" -d "+self.finalLocation+" -r "+(str)(self.numThreads)
         if(isTesting):
             commandStr = commandStr+" --override-k"
