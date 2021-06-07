@@ -60,7 +60,7 @@ class PlotManager:
 
     def finishPlot(self, plot):
         del self.runningPlots[self.runningPlots.index(plot)]
-        self.createPlot(plot.numThreads, plot.ramMB, plot.tempLocation)
+        self.createPlot(plot.numThreads, plot.ramMB, plot.tempLocation, kSize=plot.kSize)
         self.numFinishedPlots = self.numFinishedPlots+1
 
     def canRunNextPlot(self):
