@@ -6,6 +6,7 @@ import utilFunctions
 import time
 from copy import deepcopy
 from plot import Plot
+import os
 
 class PlotManager:
     
@@ -26,7 +27,6 @@ class PlotManager:
         return tempPlot
 
     def startPlotting(self):
-
         for tempDir in self.outputDirectories:
             os.system("chia plots add -d "+tempDir)
         self.removeFullDirectories()
