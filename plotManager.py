@@ -74,12 +74,17 @@ class PlotManager:
         
     def outputStatusOfPlots(self):
         utilFunctions.clearCommandLine()
-        print("Running Plots:")
+        print()
+        print("Running Plots: ", len(self.runningPlots))
+        print()
         for key, value in self.getAllPlotStages().items():
             print(key.tempLocation, " at Stage: ", value, "Plot Process id: ", key.processId)
-            print()
-            print("Num of waiting plots: ", len(self.waitingPlots))
-            print("Num of finished plots: ", self.numFinishedPlots)
+
+        print()
+        print()
+        print("Plots per output directories: ", self.getPlotsPerOutputLocation())
+        print("Num of waiting plots: ", len(self.waitingPlots))
+        print("Num of finished plots: ", self.numFinishedPlots)
 
 
     def getAllPlotStages(self):
@@ -89,11 +94,24 @@ class PlotManager:
 
         return plotStagesDict
 
+    def getPlotsPerOutputLocation(self):
+
+        plotsDirectoryDict = {}
+
+        for tempDir in self.outputDirectories:
+            plotsDirectoryDict[tempDir]= 0
+
+        for tempPlot in self.runningPlots:
+            if(tempPlot.finalLocation in plotsDirectoryDict):
+                plotsDirectoryDict[tempPlot.finalLocation] = plotsDirectoryDict[tempPlot.finalLocation]+1
+
+        return plotsDirectoryDict
+
     def selectOutputDirectory(self):
         self.removeFullDirectories()
         minPlots = 100
         outputDirectory = None
-        for key, value in self.plotsPerOutputLocation.items():
+        for key, value in self.getPlotsPerOutputLocation():
             if(value < minPlots):
                 outputDirectory = key
                 minPlots = value
@@ -103,7 +121,12 @@ class PlotManager:
     def removeFullDirectories(self):
         spaceOutputDirectories = []
         for outputDirectory in self.outputDirectories:
-            if(utilFunctions.get_free_space_gb(outputDirectory) > 300):
+            freeSpace = utilFunctions.get_free_space_gb(outputDirectory)
+            for tempPlot in self.runningPlots:
+                if(tempPlot.tempLocation == outputDirectory):
+                    freeSpace = freeSpace - 100
+
+            if(freeSpace > 400):
                 spaceOutputDirectories.append(outputDirectory)
             else:
                 del self.plotsPerOutputLocation[outputDirectory]
@@ -112,7 +135,7 @@ class PlotManager:
         self.outputDirectories = deepcopy(spaceOutputDirectories)
 
     def runPlot(self, plot):
-        if(self.selectOutputDirectory is not None):
+        if(self.selectOutputDirectory() is not None):
             plot.finalLocation = self.selectOutputDirectory()
         else:
             raise Exception('runPlot failed: selectOutputDirectory returned null')
