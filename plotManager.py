@@ -112,7 +112,7 @@ class PlotManager:
         self.removeFullDirectories()
         minPlots = 100
         outputDirectory = None
-        for key, value in self.getPlotsPerOutputLocation():
+        for key, value in self.getPlotsPerOutputLocation().items():
             if(value < minPlots):
                 outputDirectory = key
                 minPlots = value
