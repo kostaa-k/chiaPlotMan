@@ -85,6 +85,7 @@ class PlotManager:
         print("Plots per output directories: ", self.getPlotsPerOutputLocation())
         print("Num of waiting plots: ", len(self.waitingPlots))
         print("Num of finished plots: ", self.numFinishedPlots)
+        print("Output directories: ", self.outputDirectories)
 
 
     def getAllPlotStages(self):
