@@ -124,7 +124,7 @@ class PlotManager:
         for outputDirectory in self.outputDirectories:
             freeSpace = utilFunctions.get_free_space_gb(outputDirectory)
             for tempPlot in self.runningPlots:
-                if(tempPlot.tempLocation == outputDirectory):
+                if(tempPlot.finalLocation == outputDirectory):
                     freeSpace = freeSpace - 100
 
             if(freeSpace > 400):
